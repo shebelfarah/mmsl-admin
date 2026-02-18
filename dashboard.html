@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | MMSL Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <h2>Maisha <span>Admin</span></h2>
+        <p>Content Management</p>
+      </div>
+      <nav class="sidebar__nav">
+        <div class="sidebar__label">Main</div>
+        <a class="sidebar__link active" data-section="overview" onclick="showSection('overview')">
+          <i class="fas fa-th-large"></i> Overview
+        </a>
+
+        <div class="sidebar__label">Content</div>
+        <a class="sidebar__link" data-section="products" onclick="showSection('products')">
+          <i class="fas fa-box-open"></i> Products
+        </a>
+        <a class="sidebar__link" data-section="careers" onclick="showSection('careers')">
+          <i class="fas fa-briefcase"></i> Careers
+        </a>
+        <a class="sidebar__link" data-section="homepage" onclick="showSection('homepage')">
+          <i class="fas fa-home"></i> Homepage
+        </a>
+
+        <a class="sidebar__link sidebar__link--danger" onclick="Auth.logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ===== OVERVIEW ===== -->
+      <div class="section-view active" id="section-overview">
+        <div class="main-content__header">
+          <h1>Dashboard Overview</h1>
+          <span style="color: var(--color-mid-gray); font-size: 0.85rem;" id="last-updated"></span>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--primary">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <div class="stat-card__text">
+              <h3 id="stat-products">-</h3>
+              <p>Products</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--secondary">
+              <i class="fas fa-th-list"></i>
+            </div>
+            <div class="stat-card__text">
+              <h3 id="stat-categories">-</h3>
+              <p>Categories</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--success">
+              <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="stat-card__text">
+              <h3 id="stat-jobs">-</h3>
+              <p>Active Jobs</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header">
+            <h3>Quick Actions</h3>
+          </div>
+          <div class="panel__body" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn--primary btn--sm" onclick="showSection('products'); openProductModal();">
+              <i class="fas fa-plus"></i> Add Product
+            </button>
+            <button class="btn btn--secondary btn--sm" onclick="showSection('careers'); openJobModal();">
+              <i class="fas fa-plus"></i> Add Job Posting
+            </button>
+            <button class="btn btn--outline btn--sm" onclick="showSection('homepage');">
+              <i class="fas fa-edit"></i> Edit Homepage
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCTS MANAGER ===== -->
+      <div class="section-view" id="section-products">
+        <div class="main-content__header">
+          <h1>Products Manager</h1>
+          <button class="btn btn--primary btn--sm" onclick="openProductModal()">
+            <i class="fas fa-plus"></i> Add Product
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header">
+            <h3>All Products</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <tr><td colspan="4" style="text-align: center; padding: 2rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 1.5rem;">
+          <div class="panel__header">
+            <h3>Categories</h3>
+            <button class="btn btn--outline btn--sm" onclick="openCategoryModal()">
+              <i class="fas fa-plus"></i> Add Category
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>ID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="categories-table-body">
+                <tr><td colspan="4" style="text-align: center; padding: 2rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CAREERS MANAGER ===== -->
+      <div class="section-view" id="section-careers">
+        <div class="main-content__header">
+          <h1>Careers Manager</h1>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
+              <input type="checkbox" id="hiring-toggle" onchange="toggleHiring()">
+              <strong>Hiring Active</strong>
+            </label>
+            <button class="btn btn--primary btn--sm" onclick="openJobModal()">
+              <i class="fas fa-plus"></i> Add Job
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header">
+            <h3>Job Postings</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Department</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Deadline</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="jobs-table-body">
+                <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== HOMEPAGE EDITOR ===== -->
+      <div class="section-view" id="section-homepage">
+        <div class="main-content__header">
+          <h1>Homepage Content</h1>
+          <button class="btn btn--primary btn--sm" onclick="saveHomepageContent()">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header"><h3>Hero Section</h3></div>
+          <div class="panel__body">
+            <div class="form-group">
+              <label for="hero-headline">Headline</label>
+              <input type="text" id="hero-headline" class="form-control" placeholder="Main headline">
+            </div>
+            <div class="form-group">
+              <label for="hero-subheadline">Subheadline</label>
+              <textarea id="hero-subheadline" class="form-control" placeholder="Subtitle text"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="hero-cta1-text">Primary Button Text</label>
+                <input type="text" id="hero-cta1-text" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="hero-cta1-url">Primary Button URL</label>
+                <input type="text" id="hero-cta1-url" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="hero-cta2-text">Secondary Button Text</label>
+                <input type="text" id="hero-cta2-text" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="hero-cta2-url">Secondary Button URL</label>
+                <input type="text" id="hero-cta2-url" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header"><h3>Stats</h3></div>
+          <div class="panel__body" id="stats-editor">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__header"><h3>Mission & Vision</h3></div>
+          <div class="panel__body">
+            <div class="form-group">
+              <label for="content-mission">Mission</label>
+              <textarea id="content-mission" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="content-vision">Vision</label>
+              <textarea id="content-vision" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="content-csr">CSR Statement</label>
+              <textarea id="content-csr" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ===== PRODUCT MODAL ===== -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 id="product-modal-title">Add Product</h3>
+        <button class="modal__close" onclick="closeModal('product-modal')">&times;</button>
+      </div>
+      <div class="modal__body">
+        <input type="hidden" id="product-edit-id">
+        <div class="form-group">
+          <label for="product-name">Product Name</label>
+          <input type="text" id="product-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="product-category">Category</label>
+          <select id="product-category" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label for="product-description">Description</label>
+          <textarea id="product-description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="product-image">Image URL (optional)</label>
+          <input type="text" id="product-image" class="form-control" placeholder="assets/images/products/...">
+        </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="product-featured"> Featured product
+          </label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--outline btn--sm" onclick="closeModal('product-modal')">Cancel</button>
+        <button class="btn btn--primary btn--sm" onclick="saveProduct()">Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CATEGORY MODAL ===== -->
+  <div class="modal-overlay" id="category-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 id="category-modal-title">Add Category</h3>
+        <button class="modal__close" onclick="closeModal('category-modal')">&times;</button>
+      </div>
+      <div class="modal__body">
+        <input type="hidden" id="category-edit-id">
+        <div class="form-group">
+          <label for="category-name">Category Name</label>
+          <input type="text" id="category-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="category-id">Category ID (lowercase, no spaces)</label>
+          <input type="text" id="category-id" class="form-control" placeholder="e.g. pharmaceuticals">
+        </div>
+        <div class="form-group">
+          <label for="category-description">Description</label>
+          <textarea id="category-description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="category-icon">Font Awesome Icon Class</label>
+          <input type="text" id="category-icon" class="form-control" placeholder="e.g. fas fa-pills">
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--outline btn--sm" onclick="closeModal('category-modal')">Cancel</button>
+        <button class="btn btn--primary btn--sm" onclick="saveCategory()">Save Category</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== JOB MODAL ===== -->
+  <div class="modal-overlay" id="job-modal">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal__header">
+        <h3 id="job-modal-title">Add Job Posting</h3>
+        <button class="modal__close" onclick="closeModal('job-modal')">&times;</button>
+      </div>
+      <div class="modal__body">
+        <input type="hidden" id="job-edit-id">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="job-title">Job Title</label>
+            <input type="text" id="job-title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="job-department">Department</label>
+            <input type="text" id="job-department" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="job-type">Type</label>
+            <select id="job-type" class="form-control">
+              <option>Full-time</option>
+              <option>Part-time</option>
+              <option>Contract</option>
+              <option>Internship</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="job-location">Location</label>
+            <input type="text" id="job-location" class="form-control" value="Kampala, Uganda">
+          </div>
+          <div class="form-group">
+            <label for="job-deadline">Application Deadline</label>
+            <input type="date" id="job-deadline" class="form-control">
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-top: 1.5rem;">
+              <input type="checkbox" id="job-active" checked> Active (visible on website)
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="job-description">Description</label>
+          <textarea id="job-description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Requirements (one per line)</label>
+          <textarea id="job-requirements" class="form-control" placeholder="Bachelor's degree&#10;2+ years experience&#10;Strong communication skills"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Responsibilities (one per line)</label>
+          <textarea id="job-responsibilities" class="form-control" placeholder="Develop client relationships&#10;Achieve sales targets&#10;Submit reports"></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--outline btn--sm" onclick="closeModal('job-modal')">Cancel</button>
+        <button class="btn btn--primary btn--sm" onclick="saveJob()">Save Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/github-api.js"></script>
+  <script>
+    // ===== Auth Guard =====
+    if (!Auth.requireAuth()) throw new Error('Not authenticated');
+
+    // ===== State =====
+    let productsData = null;
+    let productsSha = null;
+    let careersData = null;
+    let careersSha = null;
+    let contentData = null;
+    let contentSha = null;
+
+    // ===== Section Navigation =====
+    function showSection(sectionId) {
+      document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar__link').forEach(el => el.classList.remove('active'));
+
+      document.getElementById('section-' + sectionId).classList.add('active');
+      document.querySelector(`.sidebar__link[data-section="${sectionId}"]`).classList.add('active');
+    }
+
+    // ===== Toast Notifications =====
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast toast--${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // ===== Modal Helpers =====
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // ===== LOAD ALL DATA =====
+    async function loadAllData() {
+      try {
+        const [products, careers, content] = await Promise.all([
+          GitHubAPI.readFile('data/products.json'),
+          GitHubAPI.readFile('data/careers.json'),
+          GitHubAPI.readFile('data/content.json')
+        ]);
+
+        productsData = products.content;
+        productsSha = products.sha;
+        careersData = careers.content;
+        careersSha = careers.sha;
+        contentData = content.content;
+        contentSha = content.sha;
+
+        renderOverview();
+        renderProductsTable();
+        renderCategoriesTable();
+        renderJobsTable();
+        renderHomepageEditor();
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showToast('Failed to load data: ' + error.message, 'error');
+      }
+    }
+
+    // ===== OVERVIEW =====
+    function renderOverview() {
+      document.getElementById('stat-products').textContent = productsData.products.length;
+      document.getElementById('stat-categories').textContent = productsData.categories.length;
+      document.getElementById('stat-jobs').textContent = careersData.jobs.filter(j => j.active).length;
+
+      const lastUpdate = new Date(productsData.lastUpdated || contentData.lastUpdated);
+      document.getElementById('last-updated').textContent = 'Last updated: ' + lastUpdate.toLocaleDateString();
+    }
+
+    // ===== PRODUCTS =====
+    function renderProductsTable() {
+      const tbody = document.getElementById('products-table-body');
+      if (productsData.products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--color-mid-gray);">No products yet. Add your first product!</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = productsData.products.map(p => {
+        const cat = productsData.categories.find(c => c.id === p.categoryId);
+        return `
+          <tr>
+            <td><strong>${p.name}</strong></td>
+            <td>${cat ? cat.name : p.categoryId}</td>
+            <td>${p.featured ? '<span class="badge badge--featured">Featured</span>' : '-'}</td>
+            <td>
+              <div class="actions">
+                <button class="btn-icon" onclick="editProduct('${p.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+                <button class="btn-icon btn-icon--danger" onclick="deleteProduct('${p.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Update category select in product modal
+      const catSelect = document.getElementById('product-category');
+      catSelect.innerHTML = productsData.categories.map(c =>
+        `<option value="${c.id}">${c.name}</option>`
+      ).join('');
+    }
+
+    function renderCategoriesTable() {
+      const tbody = document.getElementById('categories-table-body');
+      tbody.innerHTML = productsData.categories.map(c => `
+        <tr>
+          <td><i class="${c.icon}" style="color: var(--color-primary);"></i></td>
+          <td><strong>${c.name}</strong></td>
+          <td><code style="font-size: 0.8rem; background: var(--color-off-white); padding: 2px 6px; border-radius: 3px;">${c.id}</code></td>
+          <td>
+            <div class="actions">
+              <button class="btn-icon" onclick="editCategory('${c.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+              <button class="btn-icon btn-icon--danger" onclick="deleteCategory('${c.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openProductModal(product = null) {
+      document.getElementById('product-modal-title').textContent = product ? 'Edit Product' : 'Add Product';
+      document.getElementById('product-edit-id').value = product ? product.id : '';
+      document.getElementById('product-name').value = product ? product.name : '';
+      document.getElementById('product-category').value = product ? product.categoryId : (productsData.categories[0]?.id || '');
+      document.getElementById('product-description').value = product ? product.description : '';
+      document.getElementById('product-image').value = product ? (product.image || '') : '';
+      document.getElementById('product-featured').checked = product ? product.featured : false;
+      document.getElementById('product-modal').classList.add('show');
+    }
+
+    function editProduct(id) {
+      const product = productsData.products.find(p => p.id === id);
+      if (product) openProductModal(product);
+    }
+
+    async function saveProduct() {
+      const editId = document.getElementById('product-edit-id').value;
+      const product = {
+        id: editId || 'prod-' + Date.now(),
+        categoryId: document.getElementById('product-category').value,
+        name: document.getElementById('product-name').value,
+        description: document.getElementById('product-description').value,
+        image: document.getElementById('product-image').value,
+        featured: document.getElementById('product-featured').checked,
+        order: productsData.products.length + 1
+      };
+
+      if (!product.name) {
+        showToast('Product name is required', 'error');
+        return;
+      }
+
+      try {
+        if (editId) {
+          const idx = productsData.products.findIndex(p => p.id === editId);
+          if (idx >= 0) {
+            product.order = productsData.products[idx].order;
+            productsData.products[idx] = product;
+          }
+        } else {
+          productsData.products.push(product);
+        }
+
+        productsData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/products.json', productsData, productsSha, editId ? `Update product: ${product.name}` : `Add product: ${product.name}`);
+        productsSha = result.content.sha;
+
+        closeModal('product-modal');
+        renderProductsTable();
+        renderOverview();
+        showToast(editId ? 'Product updated!' : 'Product added!');
+      } catch (error) {
+        showToast('Error saving product: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+
+      try {
+        productsData.products = productsData.products.filter(p => p.id !== id);
+        productsData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/products.json', productsData, productsSha, 'Delete product');
+        productsSha = result.content.sha;
+
+        renderProductsTable();
+        renderOverview();
+        showToast('Product deleted');
+      } catch (error) {
+        showToast('Error deleting product: ' + error.message, 'error');
+      }
+    }
+
+    // ===== CATEGORIES =====
+    function openCategoryModal(category = null) {
+      document.getElementById('category-modal-title').textContent = category ? 'Edit Category' : 'Add Category';
+      document.getElementById('category-edit-id').value = category ? category.id : '';
+      document.getElementById('category-name').value = category ? category.name : '';
+      document.getElementById('category-id').value = category ? category.id : '';
+      document.getElementById('category-description').value = category ? category.description : '';
+      document.getElementById('category-icon').value = category ? category.icon : 'fas fa-box';
+      if (category) document.getElementById('category-id').readOnly = true;
+      else document.getElementById('category-id').readOnly = false;
+      document.getElementById('category-modal').classList.add('show');
+    }
+
+    function editCategory(id) {
+      const cat = productsData.categories.find(c => c.id === id);
+      if (cat) openCategoryModal(cat);
+    }
+
+    async function saveCategory() {
+      const editId = document.getElementById('category-edit-id').value;
+      const category = {
+        id: document.getElementById('category-id').value.toLowerCase().replace(/\s+/g, '-'),
+        name: document.getElementById('category-name').value,
+        description: document.getElementById('category-description').value,
+        icon: document.getElementById('category-icon').value
+      };
+
+      if (!category.name || !category.id) {
+        showToast('Category name and ID are required', 'error');
+        return;
+      }
+
+      try {
+        if (editId) {
+          const idx = productsData.categories.findIndex(c => c.id === editId);
+          if (idx >= 0) productsData.categories[idx] = category;
+        } else {
+          productsData.categories.push(category);
+        }
+
+        productsData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/products.json', productsData, productsSha, editId ? `Update category: ${category.name}` : `Add category: ${category.name}`);
+        productsSha = result.content.sha;
+
+        closeModal('category-modal');
+        renderCategoriesTable();
+        renderProductsTable();
+        renderOverview();
+        showToast(editId ? 'Category updated!' : 'Category added!');
+      } catch (error) {
+        showToast('Error saving category: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteCategory(id) {
+      const productsInCategory = productsData.products.filter(p => p.categoryId === id).length;
+      if (productsInCategory > 0) {
+        showToast(`Cannot delete: ${productsInCategory} products use this category`, 'error');
+        return;
+      }
+      if (!confirm('Are you sure you want to delete this category?')) return;
+
+      try {
+        productsData.categories = productsData.categories.filter(c => c.id !== id);
+        productsData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/products.json', productsData, productsSha, 'Delete category');
+        productsSha = result.content.sha;
+
+        renderCategoriesTable();
+        renderOverview();
+        showToast('Category deleted');
+      } catch (error) {
+        showToast('Error deleting category: ' + error.message, 'error');
+      }
+    }
+
+    // ===== CAREERS =====
+    function renderJobsTable() {
+      document.getElementById('hiring-toggle').checked = careersData.hiringActive;
+
+      const tbody = document.getElementById('jobs-table-body');
+      if (careersData.jobs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--color-mid-gray);">No job postings yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = careersData.jobs.map(j => `
+        <tr>
+          <td><strong>${j.title}</strong></td>
+          <td>${j.department}</td>
+          <td>${j.type}</td>
+          <td><span class="badge badge--${j.active ? 'active' : 'inactive'}">${j.active ? 'Active' : 'Inactive'}</span></td>
+          <td>${j.deadline || '-'}</td>
+          <td>
+            <div class="actions">
+              <button class="btn-icon" onclick="editJob('${j.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+              <button class="btn-icon" onclick="toggleJobActive('${j.id}')" title="Toggle active"><i class="fas fa-toggle-${j.active ? 'on' : 'off'}"></i></button>
+              <button class="btn-icon btn-icon--danger" onclick="deleteJob('${j.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function toggleHiring() {
+      try {
+        careersData.hiringActive = document.getElementById('hiring-toggle').checked;
+        careersData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/careers.json', careersData, careersSha, `${careersData.hiringActive ? 'Enable' : 'Disable'} hiring`);
+        careersSha = result.content.sha;
+        showToast(careersData.hiringActive ? 'Hiring enabled' : 'Hiring disabled');
+      } catch (error) {
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    function openJobModal(job = null) {
+      document.getElementById('job-modal-title').textContent = job ? 'Edit Job Posting' : 'Add Job Posting';
+      document.getElementById('job-edit-id').value = job ? job.id : '';
+      document.getElementById('job-title').value = job ? job.title : '';
+      document.getElementById('job-department').value = job ? job.department : '';
+      document.getElementById('job-type').value = job ? job.type : 'Full-time';
+      document.getElementById('job-location').value = job ? job.location : 'Kampala, Uganda';
+      document.getElementById('job-deadline').value = job ? job.deadline : '';
+      document.getElementById('job-active').checked = job ? job.active : true;
+      document.getElementById('job-description').value = job ? job.description : '';
+      document.getElementById('job-requirements').value = job ? (job.requirements || []).join('\n') : '';
+      document.getElementById('job-responsibilities').value = job ? (job.responsibilities || []).join('\n') : '';
+      document.getElementById('job-modal').classList.add('show');
+    }
+
+    function editJob(id) {
+      const job = careersData.jobs.find(j => j.id === id);
+      if (job) openJobModal(job);
+    }
+
+    async function saveJob() {
+      const editId = document.getElementById('job-edit-id').value;
+      const job = {
+        id: editId || 'job-' + Date.now(),
+        title: document.getElementById('job-title').value,
+        department: document.getElementById('job-department').value,
+        type: document.getElementById('job-type').value,
+        location: document.getElementById('job-location').value,
+        posted: editId ? (careersData.jobs.find(j => j.id === editId)?.posted || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+        deadline: document.getElementById('job-deadline').value,
+        description: document.getElementById('job-description').value,
+        requirements: document.getElementById('job-requirements').value.split('\n').filter(r => r.trim()),
+        responsibilities: document.getElementById('job-responsibilities').value.split('\n').filter(r => r.trim()),
+        active: document.getElementById('job-active').checked
+      };
+
+      if (!job.title) {
+        showToast('Job title is required', 'error');
+        return;
+      }
+
+      try {
+        if (editId) {
+          const idx = careersData.jobs.findIndex(j => j.id === editId);
+          if (idx >= 0) careersData.jobs[idx] = job;
+        } else {
+          careersData.jobs.push(job);
+        }
+
+        careersData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/careers.json', careersData, careersSha, editId ? `Update job: ${job.title}` : `Add job: ${job.title}`);
+        careersSha = result.content.sha;
+
+        closeModal('job-modal');
+        renderJobsTable();
+        renderOverview();
+        showToast(editId ? 'Job posting updated!' : 'Job posting added!');
+      } catch (error) {
+        showToast('Error saving job: ' + error.message, 'error');
+      }
+    }
+
+    async function toggleJobActive(id) {
+      try {
+        const job = careersData.jobs.find(j => j.id === id);
+        if (!job) return;
+        job.active = !job.active;
+
+        careersData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/careers.json', careersData, careersSha, `${job.active ? 'Activate' : 'Deactivate'} job: ${job.title}`);
+        careersSha = result.content.sha;
+
+        renderJobsTable();
+        renderOverview();
+        showToast(`Job ${job.active ? 'activated' : 'deactivated'}`);
+      } catch (error) {
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteJob(id) {
+      if (!confirm('Are you sure you want to delete this job posting?')) return;
+
+      try {
+        careersData.jobs = careersData.jobs.filter(j => j.id !== id);
+        careersData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/careers.json', careersData, careersSha, 'Delete job posting');
+        careersSha = result.content.sha;
+
+        renderJobsTable();
+        renderOverview();
+        showToast('Job posting deleted');
+      } catch (error) {
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    // ===== HOMEPAGE CONTENT =====
+    function renderHomepageEditor() {
+      // Hero
+      document.getElementById('hero-headline').value = contentData.hero?.headline || '';
+      document.getElementById('hero-subheadline').value = contentData.hero?.subheadline || '';
+      document.getElementById('hero-cta1-text').value = contentData.hero?.ctaPrimary?.text || '';
+      document.getElementById('hero-cta1-url').value = contentData.hero?.ctaPrimary?.url || '';
+      document.getElementById('hero-cta2-text').value = contentData.hero?.ctaSecondary?.text || '';
+      document.getElementById('hero-cta2-url').value = contentData.hero?.ctaSecondary?.url || '';
+
+      // Stats
+      const statsEditor = document.getElementById('stats-editor');
+      statsEditor.innerHTML = (contentData.stats || []).map((stat, i) => `
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem; align-items: end;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Value</label>
+            <input type="text" class="form-control stat-value" data-index="${i}" value="${stat.value}">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Label</label>
+            <input type="text" class="form-control stat-label" data-index="${i}" value="${stat.label}">
+          </div>
+          <button class="btn-icon btn-icon--danger" onclick="removeStat(${i})" title="Remove" style="margin-bottom: 2px;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `).join('') + `
+        <button class="btn btn--outline btn--sm" onclick="addStat()" style="margin-top: 0.5rem;">
+          <i class="fas fa-plus"></i> Add Stat
+        </button>
+      `;
+
+      // Mission / Vision / CSR
+      document.getElementById('content-mission').value = contentData.about?.mission || '';
+      document.getElementById('content-vision').value = contentData.about?.vision || '';
+      document.getElementById('content-csr').value = contentData.csr || '';
+    }
+
+    function addStat() {
+      contentData.stats = contentData.stats || [];
+      contentData.stats.push({ value: '', label: '' });
+      renderHomepageEditor();
+    }
+
+    function removeStat(index) {
+      contentData.stats.splice(index, 1);
+      renderHomepageEditor();
+    }
+
+    async function saveHomepageContent() {
+      try {
+        // Gather hero data
+        contentData.hero = {
+          headline: document.getElementById('hero-headline').value,
+          subheadline: document.getElementById('hero-subheadline').value,
+          ctaPrimary: {
+            text: document.getElementById('hero-cta1-text').value,
+            url: document.getElementById('hero-cta1-url').value
+          },
+          ctaSecondary: {
+            text: document.getElementById('hero-cta2-text').value,
+            url: document.getElementById('hero-cta2-url').value
+          }
+        };
+
+        // Gather stats
+        const statValues = document.querySelectorAll('.stat-value');
+        const statLabels = document.querySelectorAll('.stat-label');
+        contentData.stats = [];
+        statValues.forEach((input, i) => {
+          contentData.stats.push({
+            value: input.value,
+            label: statLabels[i].value
+          });
+        });
+
+        // Gather about
+        contentData.about = contentData.about || {};
+        contentData.about.mission = document.getElementById('content-mission').value;
+        contentData.about.vision = document.getElementById('content-vision').value;
+        contentData.csr = document.getElementById('content-csr').value;
+
+        contentData.lastUpdated = new Date().toISOString();
+        const result = await GitHubAPI.writeFile('data/content.json', contentData, contentSha, 'Update homepage content');
+        contentSha = result.content.sha;
+
+        showToast('Homepage content saved! Changes will appear on the site within 5 minutes.');
+      } catch (error) {
+        showToast('Error saving content: ' + error.message, 'error');
+      }
+    }
+
+    // ===== INITIALIZE =====
+    loadAllData();
+  </script>
+</body>
+</html>

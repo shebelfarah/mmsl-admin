@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Maisha Medical Supplies</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-card__logo">
+        <h1>Maisha <span>Admin</span></h1>
+        <p>Content Management System</p>
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="password">Admin Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Enter admin password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pat">GitHub Personal Access Token</label>
+          <input type="password" id="pat" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+          <p class="help-text">
+            <i class="fas fa-info-circle"></i>
+            Fine-grained PAT with Contents read/write access to the MMSL repo.
+            <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Create one here</a>
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full" id="login-btn">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/js/auth.js"></script>
+  <script>
+    // Redirect if already authenticated
+    if (Auth.isAuthenticated()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('login-btn');
+      const errorEl = document.getElementById('login-error');
+      const password = document.getElementById('password').value;
+      const pat = document.getElementById('pat').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+      errorEl.classList.remove('show');
+
+      const result = await Auth.login(password, pat);
+
+      if (result.success) {
+        window.location.href = 'dashboard.html';
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+      }
+    });
+  </script>
+</body>
+</html>
