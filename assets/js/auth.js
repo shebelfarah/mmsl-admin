@@ -10,7 +10,7 @@ const Auth = {
   //     .then(h => Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join(''))
   //     .then(console.log)
   // Then replace the hash below:
-  PASSWORD_HASH: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', // default: "password"
+  PASSWORD_HASH: '78aa07dcb6a513850809d5ea81149f2724240e97f7e4209978f169e087eda230',
 
   async hashPassword(password) {
     const encoder = new TextEncoder();
